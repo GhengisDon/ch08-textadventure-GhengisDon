@@ -19,6 +19,8 @@ public class Game
 {
     private Parser parser;
     private Room currentRoom;
+    private Room previousRoom;
+    private Room nextRoom;
         
     /**
      * Create the game and initialise its internal map.
@@ -34,7 +36,7 @@ public class Game
      */
     private void createRooms()
     {
-        Room outside, theater, pub, lab, office;
+        Room outside, theater, pub, lab, office, courtyard, fields, stadium, bathroom1, bathroom2, storageroom1, storageroom2, parkinglot, highway, forest;
       
         // create the rooms
         outside = new Room("outside the main entrance of the university");
@@ -42,20 +44,60 @@ public class Game
         pub = new Room("in the campus pub");
         lab = new Room("in a computing lab");
         office = new Room("in the computing admin office");
+        courtyard= new Room("at the courtyard of the University");
+        fields= new Room("at the sport practice fields");
+        stadium= new Room("at the ultimate place to see sports");
+        bathroom1= new Room("smelling both 1 and 2 at the same time...gross");
+        bathroom2= new Room("thankful there is toilet paper in this bathroom at least");
+        storageroom1= new Room("lost in a room where there just happens to be too much stuff");
+        storageroom2= new Room("in the staff storage room");
+        parkinglot = new Room("where paradise was at least until they put up this parking lot");
+        forest = new Room("staring into the endless void of trees, better not go in");
+        highway = new Room("definitely not goin gto walk into all of that traffic. People got places to be");
         
-        // initialise room exits
+        // initialise room exits in the fashion of locationStart.setExit("direction", locationEnd);
         outside.setExit("east", theater);
         outside.setExit("south", lab);
         outside.setExit("west", pub);
-
+        outside.setExit("north", courtyard);
+        
+        courtyard.setExit("north",parkinglot);
+        courtyard.setExit("south",outside);    
+        courtyard.setExit("east",fields);
+        courtyard.setExit("west",stadium);
+        
+        parkinglot.setExit("west", highway);
+        parkinglot.setExit("east", forest);
+        parkinglot.setExit("south", outside);
+        
         theater.setExit("west", outside);
+        theater.setExit("east", storageroom1);
+        
+        storageroom1.setExit("west",theater);
+        storageroom1.setExit("north",bathroom2);
+        
+        bathroom2.setExit("south",storageroom1);
 
         pub.setExit("east", outside);
+        pub.setExit("south", bathroom1);
+        
+        bathroom1.setExit("north", pub);
 
         lab.setExit("north", outside);
         lab.setExit("east", office);
 
         office.setExit("west", lab);
+        office.setExit("south",storageroom2);
+        
+        storageroom2.setExit("north",office);
+        
+        highway.setExit("east", parkinglot);
+        
+        forest.setExit("west", parkinglot);
+        
+        stadium.setExit("east", courtyard);
+        
+        fields.setExit("west", courtyard);
 
         currentRoom = outside;  // start game outside
     }
@@ -114,10 +156,17 @@ public class Game
             case GO:
                 goRoom(command);
                 break;
+                
+            case SEARCH:
+                searchRoom(command);
+                break;
 
             case QUIT:
                 wantToQuit = quit(command);
                 break;
+                
+            
+
         }
         return wantToQuit;
     }
@@ -163,7 +212,51 @@ public class Game
             System.out.println(currentRoom.getLongDescription());
         }
     }
+    
+    /**
+     * This section is to deal with going back and forth between the current node and the last node.
+     */
+    private void backRoom(Command command)
+    {
+        if(!command.hasSecondWord())
+        {
+            System.out.println("Back to where exactly?");
+            return;
+        }
+        
+    }
 
+    
+    /**
+     * This is the section of the command Search, if we don't have a second word it asks where are we searching
+     * otherwise we are going to "search" for object in the room and check if we will "interact" with said object
+     * mode code must be placed here before this is considered acceptable
+     */
+    private void searchRoom(Command command)
+    {
+        if(!command.hasSecondWord())
+        {
+            //if the room is not referenced we do not know what to search.
+            System.out.println("Search what?");
+            return;
+        }
+        
+    }
+    
+    /**
+     * This is the section of the command Interact, if we don't have a second word we do not know what object we are interacting with
+     * also more code must be placed here before it is considered acceptable
+     */
+    private void interactRoom(Command command)
+    {
+        if(!command.hasSecondWord())
+        {
+            //if the object is not referenced we do not know what to interact with
+            System.out.println("Just what are we interacting with?");
+            return;
+        }
+    }
+    
     /** 
      * "Quit" was entered. Check the rest of the command to see
      * whether we really quit the game.
